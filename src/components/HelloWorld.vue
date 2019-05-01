@@ -1,48 +1,102 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+  <div class="container">
+    <div class="row">
+		<div class="col-8">
+			<ul class="list-group">
+				<li class="list-group-item" v-for="item in Users">{{item.first_name}} {{item.last_name}} ({{item.email}})</li>
+			</ul>
+		</div>
+		<div class="col-4">
+			      <div class="well">
+        <h4> Add User</h4>
+        <div class="form-group">
+          <label class="pull-left"> First Name </label>
+          <input type="text" class="form-control" placeholder="First Name" v-model="User.first_name">
+        </div>
+        <div class="form-group">
+          <label class="pull-left"> Last Name </label>
+          <input type="text" class="form-control" placeholder="Last Namen" v-model="User.last_name">
+        </div>
+        <div class="form-group">
+          <label class="pull-left"> Email </label>
+          <input type="text" class="form-control" placeholder="Email " v-model="User.email">
+        </div>
+      </div>
+  
+      <button type="submit" class="btn btn-large btn-block btn-primary full-width" @click="addToAPI">Submit</button>
+
+		</div>
+
+  
+
+	  </div>
+  
   </div>
 </template>
 
 <script>
+/* eslint-disable */
+import axios from 'axios';
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
+  name: 'hello',
+  data() {
+    return {
+      msg: 'Welcome to Your Vue.js App',
+      User: { first_name: '', last_name: '', email: '' },
+      Users:[],
+    }
+  }, 
+  methods: {
+	   setupData()
+	  {
+		      axios.get('http://localhost:3000/users')
+            .then((response) => {
+                console.log(response.data);
+                this.Users = response.data;
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+	  },
+		async addToAPI() {
+		let newUser = {
+			first_name: this.User.first_name,
+			last_name: this.User.last_name,
+			email: this.User.email
+		}
+		console.log(newUser);
+		axios.post('http://localhost:3000/users', newUser)
+			.then((response) => {
+			console.log(response);
+			this.Users.push(response.data);
+			})
+			.catch((error) => {
+			console.log(error);
+			});
+		},
+
+	  },
+	created(){
+		axios.get('http://localhost:3000/users')
+            .then((response) => {
+                console.log(response.data);
+                this.Users = response.data;
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
+h1,
+h2 {
+  font-weight: normal;
 }
 ul {
   list-style-type: none;
